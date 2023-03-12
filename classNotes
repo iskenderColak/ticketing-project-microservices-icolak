@@ -1,0 +1,51 @@
+                                MICROSERVICES
+
+--> What is your strategic goal -> For example shopping in december and may is different for Amazon
+
+--> Monolithic Architecture -> One resource -> it is in the Github
+    -> Even if there is a small changes, all the codes need to be retested and redeployed.
+    -> In mono architecture whole code should be scaled out when scaling is needed.
+
+--> In december the source code might need to be scaled out to three or more instances.
+
+--> One component means one source code means one microservice
+
+        SCALING:
+--> For example for buy functionality there is a source code. Whatever inside this code is able to
+    handle certain API calls, lets say 5000, meaning 5000 customer can buy something at the same time
+    in your app. Christmas came and 15000 people wants to buy something at the same time. This source
+    code is not ganna be able to handle and to respond back on time. Now instead of one source code we
+    ganna scale this one and we ganna make three source code
+            1 source code -> can handle 5000 calls
+            3 source code -> can handle 15000 calls
+--> Scaling is this; we ganna increase the instance of source code
+
+        LOAD BALANCER:
+--> Load meaning that; 15000 calls is coming right now, so 15000 customer wants to buy something in
+    your app at the same time. So those API calls, you need to respond back. How many of them is ganna
+    be responded back by which instance, there is a mechanism called Load Balancer, it is setting this
+    traffic. This traffic is managed by load balancer.
+
+--> After decomposing the application, if we do not implement the components of microservice, then we
+    still have some trouble that;
+        --> Scaling manually is not optimum choice, for example you scale the app for 50000 requests for
+            christmas days,
+                    if 100000 requests come then the app fail,
+                    if 20000 requests come then it means extra cost
+        --> And what if one of the instance broken then chain of failure.
+
+*** --> For all these kind of problems we can get a solution by implementing the components of MS.
+
+        --> 1- SERVICE DISCOVERY
+--> Whenever any microservice or any instance from a MS is created it is ganna register itself to service
+    discovery. So client(front-end) know what instances are available right now.
+--> Sometimes it is happening that one of the instances is broken and it just gone. There is a certain
+    communication between instance and discovery service; we call this one HEALTH CHECK-UP
+    --> Instance 1 says hey i am healthy, i am up and i am running just let you know and service discovery
+        says thank you, whoever wants to use I pass your info to it.
+    --> And the other instance says: I am not running any more and i am done, then discovery says the client
+        hey this instance is done but you can use that one, it is up and running.
+    --> Instances talk to each other through Service Discovery and they send some signal to each other as well.
+
+        --> 2- EDGE SERVER
+
