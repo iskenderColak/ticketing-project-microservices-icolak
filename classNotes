@@ -10,6 +10,19 @@
 
 --> One component means one source code means one microservice
 
+--> First we did monolithic application, we implemented all the Spring Boot, then we see some
+    challenges with the monolithic with the deployment is difficult, because one resource code
+    everybody is putting same time, if you need to make any changes you need to test all the
+    application, these are the challenges that is why we decompose the application
+
+--> But after we decompose the application there were still some challenges that, for example if
+    you wanna scale the application, how you ganna introduce those instances, how you ganna make
+    the one entry to application from the outside, how you ganna centralize your configuration(appProp)
+    how you ganna centralize your log, these were challenges, evn though if you decompose the
+    application
+        ->  and to be able to find solution for those challenges we ganna implement the microservice
+            concept
+
         SCALING:
 --> For example for buy functionality there is a source code. Whatever inside this code is able to
     handle certain API calls, lets say 5000, meaning 5000 customer can buy something at the same time
@@ -21,6 +34,25 @@
 --> Scaling is this; we ganna increase the instance of source code
 
         LOAD BALANCER:
+        --> Kubernetes -> Ingress -> managed load balancer
+        --> Since kubernetes-ingress managed load balancing, in discovery service POM at dependency
+            netflix-eureka we make exclusions for ribbon dependency which was managing
+            load balancing before kubernetes. We don't want ribbon to do load balancing.
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.cloud</groupId>
+                    <artifactId>spring-cloud-starter-ribbon</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.netflix.ribbon</groupId>
+                    <artifactId>ribbon-eureka</artifactId>
+                </exclusion>
+                <exclusion>  // this exclusion may not be necessary, in a form it says put
+                    <groupId>javax.servlet</groupId>        // this exclusion
+                    <artifactId>servlet-api</artifactId>
+                </exclusion>
+            </exclusions>
+
 --> Load meaning that; 15000 calls is coming right now, so 15000 customer wants to buy something in
     your app at the same time. So those API calls, you need to respond back. How many of them is ganna
     be responded back by which instance, there is a mechanism called Load Balancer, it is setting this
@@ -46,6 +78,29 @@
     --> And the other instance says: I am not running any more and i am done, then discovery says the client
         hey this instance is done but you can use that one, it is up and running.
     --> Instances talk to each other through Service Discovery and they send some signal to each other as well.
+
+        --> Service Eureka How it works?
+--> Basically, first all our microservices with their instances needs to register to Service Discovery
+--> How client is ganna get that information? For example project service says "I need to call user service"
+    It goes to Eureka and says "can you give me one instance belong to user service" and Eureka is ganna
+    provide that information. That is the client look up portion.
+--> Information sharing is interior the Eureka, every instance and every microservice register means
+    register to Nodes in the Eureka, that is the architecture in the Eureka. These nodes are the places where
+    instances are register. You can increase the nodes, it is totally your business logic, business needs.
+    It is configuration. Why we increase the nodes, because if anything happens to node1 we don't want all
+    the system fail. It can be happen because of some reason, network, hardware or anything node1 is shut down.
+    To be able to prevent all the system fail we increase the nodes and these nodes talk to each other and give
+    all the information about instances to each other. Node2 keeps the information that node1 has, So if anything
+    happens to node1, node2 can provide information to client.
+--> Health monitoring, Eureka needs to know about the health of the instances. Every instance after register itself
+    to Eureka, needs to send Heartbeat every 30 seconds that means i am okay, up, healthy and running. If anything
+    happens to the instance and the heartbeat doesn't come Eureka waits, doesn't kill right away after 30 minutes
+    because it can something happen and it can go back again, Eureka listens for 60 seconds and 90 seconds.
+    90 second is the default time to kill the instances and deregister from the Eureka. After 90 seconds still
+    if Eureka can not get heart beat from the one of instance, it unregisters that instance from the node. Lets say
+    for example Node3 says "i unregister" service instance, and then this node3 shares this information with the
+    other nodes. So all the nodes are aware of that instance is not available any more in the registration.
+
 
         --> 2- EDGE SERVER
 
