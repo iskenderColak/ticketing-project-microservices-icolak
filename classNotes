@@ -100,7 +100,12 @@
     if Eureka can not get heart beat from the one of instance, it unregisters that instance from the node. Lets say
     for example Node3 says "i unregister" service instance, and then this node3 shares this information with the
     other nodes. So all the nodes are aware of that instance is not available any more in the registration.
+--> localhost:8761 -> Spring Eureka
+--> localhost:8761/eureka/apps
+--> localhost:9092/actuator/info
+--> localhost:9091/actuator/health
+--> How we scale the instances, how we increase the instances, it is done by devops developer by
+    using Kubernetes Cluster
 
-
-        --> 2- EDGE SERVER
+        --> 2- EDGE SERVER (SPRING CLOUD GATEWAY)
 
